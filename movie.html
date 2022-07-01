@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movies</title>
+    <style>
+        #mov {
+            border: 1px solid black;
+            height: 100px;
+            background-image: url(https://images.pexels.com/photos/5022456/pexels-photo-5022456.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500);
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #name {
+            padding: 15px 80px;
+        }
+
+        button {
+            padding: 15px;
+        }
+
+        #user {
+            display: grid;
+            grid-template-columns: repeat(4, 25%);
+            gap: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mov">
+        <input id="name" placeholder="enter movie name" type="text" />
+        <button onclick="search()">Search</button>
+    </div>
+
+    <div id="user"></div>
+</body>
+
+</html>
+
+<script>
+    var movie;
+    let container = document.getElementById("user");
+    function search() {
+        container.innerHTML = "";
+        movie = document.getElementById("name").value;
+        // console.log(movie);
+        getMovies();
+    }
+
+    async function getMovies() {
+        try {
+            let res = await fetch(
+                `http://www.omdbapi.com/?apikey=d7627796&s=${movie}`
+            );
+            let el = await res.json();
+            appendDetails(el);
+            console.log(el);
+        } catch (err) {
+            //   nothing(err);
+            console.log("err:", err);
+        }
+    }
+
+    function appendDetails(el) {
+        el.Search.forEach(function (data) {
+            let div = document.createElement("div");
+
+
+            let img = document.createElement("img");
+            img.src = data.Poster;
+            let title = document.createElement("p");
+            title.innerText = `Movie name: ${data.Title}`;
+            let year = document.createElement("p");
+            year.innerText = `Release Year: ${data.Year}`;
+            let imdb = document.createElement("p");
+            imdb.innerText = `IMDB Rating: ${data.imdbRating}`;
+
+            if (data.imdbRating > 8.5) {
+                let rec = document.createElement("p");
+                rec.innerText = "Recommended";
+                div.append(img, title, year, imdb, rec);
+                container.append(div)
+            } else {
+                div.append(img, title, year, imdb);
+                container.append(div)
+            }
+        });
+    }
+
+  //   function nothing(err) {
+  //     let p = document.createElement("p");
+  //     p.innerHTML = err.Error;
+  //     container.append(p);
+  //   }
+</script>
